@@ -1,3 +1,4 @@
+import torch
 def detect(model_path: str, image_path: str):
     model_yolo = torch.hub.load('ultralytics/yolov5', 'custom', path=model_path)
     results = model_yolo(image_path)

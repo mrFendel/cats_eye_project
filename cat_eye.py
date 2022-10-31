@@ -2,10 +2,12 @@ from PIL import Image
 import numpy as np
 import pandas as pd
 from math import atan
+import os
+from tqdm import tqdm
 
+import detect
 left_eye = Image.open("left_eye.png")
 right_eye = Image.open("right_eye.png")
-
 
 def process_photo(photo_data_path, left_coordinates, right_coordinates):
 
@@ -32,14 +34,23 @@ def process_photo(photo_data_path, left_coordinates, right_coordinates):
     image.paste(_right_eye, (x_place_right, y_place_right), _right_eye)
     image.paste(_left_eye, (x_place_left, y_place_left), _left_eye)
 
-    image.save("BruhCat.jpeg")
-
-df = pd.read_csv('coord.csv', sep='  ')
-df = df.drop('name', axis=1)
-left_df = df[df.x0 == min(df.x0)]
-
-right_df = df[df.x0 == max(df.x0)]
+    name = path_to_photo.split('.')[0].split('\\')[-1]
+    image.save(f"resultedImages/{name}.jpeg")
 
 
+if __name__ == "__main__":
+    from glob import glob
+    from shutil import rmtree
+    names = glob('img/*')
+    if not os.path.exists("resultedImages"):
+        os.mkdir("resultedImages")
 
-process_photo("catImage.jpg", left_df.squeeze().astype(int), right_df.squeeze().astype(int))
+    for path in tqdm(names):
+        path_to_photo = path
+        df = detect.detect('best.pt', path_to_photo)
+        df = df.drop('name', axis=1)
+        if df.shape[0] < 2 or df.shape[0] > 2:
+            continue
+        left_df = df[df.x0 == min(df.x0)]
+        right_df = df[df.x0 == max(df.x0)]
+        process_photo(path_to_photo, left_df.squeeze().astype(int), right_df.squeeze().astype(int))
