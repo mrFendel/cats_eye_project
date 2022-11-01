@@ -35,15 +35,15 @@ def process_photo(photo_data_path, left_coordinates, right_coordinates):
     image.paste(_left_eye, (x_place_left, y_place_left), _left_eye)
 
     name = path_to_photo.split('.')[0].split('\\')[-1]
-    image.save(f"resultedImages/{name}.jpeg")
+    image.save(f"result_img/{name}.jpeg")
 
 
 if __name__ == "__main__":
     from glob import glob
     from shutil import rmtree
     names = glob('img/*')
-    if not os.path.exists("resultedImages"):
-        os.mkdir("resultedImages")
+    if not os.path.exists("result_img"):
+        os.mkdir("result_img")
 
     for path in tqdm(names):
         path_to_photo = path
